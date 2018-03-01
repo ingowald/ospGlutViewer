@@ -33,7 +33,7 @@ IF (USE_IMAGE_MAGICK)
   ENDIF()
 ENDIF()
 
-ADD_LIBRARY(ogv_minisg
+ADD_LIBRARY(ogv_minisg 
   miniSG.cpp
   importer.cpp
   importOBJ.cpp

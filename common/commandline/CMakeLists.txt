@@ -96,7 +96,7 @@ IF(OGV_COMMANDLINE_TACHYON_SUPPORT)
   )
 ENDIF()
 
-ADD_LIBRARY(ogv_commandline
+ADD_LIBRARY(ogv_commandline 
   ${SOURCE_FILES}
 )
 

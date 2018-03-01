@@ -21,7 +21,7 @@
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR}/../..)
 
-ADD_LIBRARY(ogv_glut3d
+ADD_LIBRARY(ogv_glut3d 
   Glut3dExport.h
   glut3D.cpp
   OSPGlutViewer.cpp

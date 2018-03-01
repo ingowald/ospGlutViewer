@@ -17,29 +17,11 @@
 #include <ospray/ospray_cpp/Device.h>
 #include "common/commandline/Utility.h"
 
-#ifdef OSPRAY_APPS_ENABLE_SCRIPTING
-# include "ScriptedOSPGlutViewer.h"
-#else
 # include "common/widgets/OSPGlutViewer.h"
-#endif
 
 ospcommon::vec3f translate;
 ospcommon::vec3f scale;
 bool lockFirstFrame = false;
-
-std::string scriptFileFromCommandLine(int ac, const char **&av)
-{
-  std::string scriptFileName;
-
-  for (int i = 1; i < ac; i++) {
-    const std::string arg = av[i];
-    if (arg == "--script" || arg == "-s") {
-      scriptFileName = av[++i];
-    }
-  }
-
-  return scriptFileName;
-}
 
 void parseExtraParametersFromComandLine(int ac, const char **&av)
 {
@@ -61,30 +43,7 @@ void parseExtraParametersFromComandLine(int ac, const char **&av)
 
 int main(int ac, const char **av)
 {
-#if 1
   ospInit(&ac,av);
-#elif 1
-  ospray::cpp::Device device("default");
-  //ospray::cpp::Device device("mpi");
-
-  //device.set("numThreads", 1);
-  //device.set("logLevel", 2);
-  //device.set("debug", 1);
-  device.commit();
-
-  device.setCurrent();
-#else
-  auto device = ospCreateDevice();
-  //auto device = ospCreateDevice("mpi");
-
-  // set device parameters...
-  //ospDeviceSet1i(device, "numThreads", 1);
-  //ospDeviceSet1i(device, "logLevel", 2);
-  //ospDeviceSet1i(device, "debug", 1);
-  ospDeviceCommit(device);
-
-  ospSetCurrentDevice(device);
-#endif
 
   ospray::glut3D::initGLUT(&ac,av);
 
@@ -102,14 +61,8 @@ int main(int ac, const char **av)
 
   parseExtraParametersFromComandLine(ac, av);
 
-#ifdef OSPRAY_APPS_ENABLE_SCRIPTING
-  auto scriptFileName = scriptFileFromCommandLine(ac, av);
-
-  ospray::ScriptedOSPGlutViewer window(bbox, model, renderer,
-                                       camera, scriptFileName);
-#else
   ospray::OSPGlutViewer window(bbox, model, renderer, camera);
-#endif
+
   window.setScale(scale);
   window.setLockFirstAnimationFrame(lockFirstFrame);
   window.setTranslation(translate);

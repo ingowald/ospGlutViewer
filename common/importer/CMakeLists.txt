@@ -21,14 +21,14 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_SOURCE_DIR}/apps/qtViewer
   )
 
-ADD_LIBRARY(ogv_importer
+ADD_LIBRARY(ogv_importer 
   importOSP.cpp
   importRAW.cpp
   importRM.cpp
   Importer.cpp
   TinyXML2.cpp
 )
-TARGET_LINK_LIBRARIES(ogv_importer
+TARGET_LINK_LIBRARIES(ogv_importer 
   ospray_common
 #  ospray
 #  ospray_sg
