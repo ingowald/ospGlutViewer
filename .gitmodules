@@ -1,3 +1,6 @@
 [submodule "externals/biff"]
 	path = externals/biff
 	url = git@gitlab.com:ingowald/biff.git
+[submodule "externals/iw-ptex"]
+	path = externals/iw-ptex
+	url = git@github.com:ingowald/iw-ptex
