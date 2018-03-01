@@ -81,7 +81,7 @@ SET(SOURCE_FILES
 
   SceneParser/trianglemesh/TriangleMeshSceneParser.cpp
 
-  SceneParser/volume/VolumeSceneParser.cpp
+#  SceneParser/volume/VolumeSceneParser.cpp
 
   Utility.h
 )
@@ -101,11 +101,10 @@ ADD_LIBRARY(ogv_commandline
 )
 
 TARGET_LINK_LIBRARIES(ogv_commandline
-  ogv_common
   ogv_minisg
   ogv_xml
   ogv_importer
-  ogv_tfn
+#  ogv_tfn
   biff
 #  ${BIFF_LIBRARY}
 #  ogv_ptex

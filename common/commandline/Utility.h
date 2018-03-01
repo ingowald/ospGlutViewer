@@ -20,10 +20,10 @@
 #include <ospray/ospray_cpp/Model.h>
 #include <ospray/ospray_cpp/Renderer.h>
 
-#include "commandline/CameraParser.h"
-#include "commandline/LightsParser.h"
-#include "commandline/SceneParser/MultiSceneParser.h"
-#include "commandline/RendererParser.h"
+#include "CameraParser.h"
+#include "LightsParser.h"
+#include "SceneParser/MultiSceneParser.h"
+#include "RendererParser.h"
 
 #include <tuple>
 #include <type_traits>

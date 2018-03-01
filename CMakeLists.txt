@@ -34,12 +34,15 @@ SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++11)
 
 
 ADD_SUBDIRECTORY(externals/biff/biff)
+ADD_SUBDIRECTORY(externals/iw-ptex/)
 
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_LIST_DIR}
   ${CMAKE_CURRENT_LIST_DIR}/externals/biff
+  ${CMAKE_CURRENT_LIST_DIR}/externals/iw-ptex/src
 )
 
+ADD_SUBDIRECTORY(common/xml)
 ADD_SUBDIRECTORY(common/miniSG)
 ADD_SUBDIRECTORY(common/widgets)
 ADD_SUBDIRECTORY(common/importer)
@@ -72,10 +75,9 @@ ENDIF()
 SET(LIBS
 #  ospray
   ogv_commandline
-  ogv_common
   ogv_glut3d
-  ogv_minisg
-  ogv_importer
+#  ogv_minisg
+#  ogv_importer
   ${OSPRAY_LIBRARY}
   ${OPENGL_LIBRARIES}
   ${GLUT_LIBRARIES}

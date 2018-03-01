@@ -23,7 +23,7 @@
 #endif
 #include "trianglemesh/TriangleMeshSceneParser.h"
 #ifndef _WIN32
-# include "volume/VolumeSceneParser.h"
+// # include "volume/VolumeSceneParser.h"
 #endif
 
 #include "biff/biff.h"
@@ -238,7 +238,7 @@ bool MultiSceneParser::parse(int ac, const char **&av)
   ParticleSceneParser     particleParser(renderer);
   StreamLineSceneParser   streamlineParser(renderer);
 #ifndef _WIN32
-  VolumeSceneParser       volumeParser(renderer);
+  // VolumeSceneParser       volumeParser(renderer);
 #endif
 
   bool gotBiff = biffParser.parse(ac, av);
@@ -249,7 +249,7 @@ bool MultiSceneParser::parse(int ac, const char **&av)
   bool gotParticleScene      = particleParser.parse(ac, av);
   bool gotStreamLineScene   = streamlineParser.parse(ac, av);
 #ifndef _WIN32
-  bool gotVolumeScene       = volumeParser.parse(ac, av);
+  // bool gotVolumeScene       = volumeParser.parse(ac, av);
 #endif
 
   SceneParser *parser = nullptr;
@@ -267,8 +267,8 @@ bool MultiSceneParser::parse(int ac, const char **&av)
   else if (gotStreamLineScene)
     parser = &streamlineParser;
 #ifndef _WIN32
-  else if (gotVolumeScene)
-    parser = &volumeParser;
+  // else if (gotVolumeScene)
+  //   parser = &volumeParser;
 #endif
 
   if (parser) {
