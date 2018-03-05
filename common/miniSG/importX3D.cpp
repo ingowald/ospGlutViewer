@@ -150,6 +150,26 @@ namespace ospray {
         });
     }
     
+    void parseGroup(Model &model, const affine3f &xfm, const xml::Node &root)
+    {
+      PING;
+      xml::for_each_child_of(root,[&](const xml::Node &node){
+          if (node.name == "Appearance") {
+            /* ignore for now */
+            warnIgnore("'Appearance' (in Shape)");
+          } else if (node.name == "Shape") {
+            parseShape(model,xfm,node);
+      //     } else if (node.name == "IndexedLineSet") {
+      //       /* ignore for now */
+      //       warnIgnore("'IndexedLineSet' (in Shape)");
+      //     } else if (node.name == "IndexedFaceSet") {
+      //       /* ignore for now */
+      //       parseIndexedFaceSet(model,xfm,node);
+          } else
+            throw std::runtime_error("importX3D: unknown child type '"+node.name+"' to 'Group' node");
+        });
+    }
+    
     void parseTransform(Model &model, const affine3f &parentXFM, const xml::Node &root)
     {
       affine3f xfm = parentXFM;
@@ -163,6 +183,8 @@ namespace ospray {
             parseTransform(model,xfm,node);
           } else if (node.name == "Shape") {
             parseShape(model,xfm,node);
+          } else if (node.name == "Group") {
+            parseGroup(model,xfm,node);
           } else throw std::runtime_error("importX3D: unknown 'transform' child type '"
                                           + node.name + "'");
         });

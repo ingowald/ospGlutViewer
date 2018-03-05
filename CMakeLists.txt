@@ -53,6 +53,7 @@ ADD_SUBDIRECTORY(externals/iw-ptex/)
 
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_LIST_DIR}
+  ${CMAKE_CURRENT_LIST_DIR}/externals/biff/3rdParty #for ospcommon
   ${CMAKE_CURRENT_LIST_DIR}/externals/biff
   ${CMAKE_CURRENT_LIST_DIR}/externals/iw-ptex/src
 )
