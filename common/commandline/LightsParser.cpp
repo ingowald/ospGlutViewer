@@ -87,7 +87,7 @@ bool DefaultLightsParser::parse(int ac, const char **&av)
   
   // HDRI environment light.
   if (HDRI_intensity > 0.f) {
-    auto ospHdri = ospray::cpp::Light("", "hdri"); // renderer.newLight("hdri");
+    auto ospHdri = ospray::cpp::Light("scivis", "hdri"); // renderer.newLight("hdri");
     ospHdri.set("name", "hdri light");
     if (HDRI_up == 0) {// up = x
       ospHdri.set("up", 1.f, 0.f, 0.f);
@@ -117,7 +117,7 @@ bool DefaultLightsParser::parse(int ac, const char **&av)
   
   if (defaultDirLight_direction != vec3f(0.f)
       && defaultDirLight_intensity > 0.f) {
-    auto ospLight = ospray::cpp::Light("", "directional"); //renderer.newLight("directional");
+    auto ospLight = ospray::cpp::Light("scivis", "directional"); //renderer.newLight("directional");
     if (ospLight.handle() == nullptr) {
       throw std::runtime_error("Failed to create a 'DirectionalLight'!");
     }
@@ -131,7 +131,7 @@ bool DefaultLightsParser::parse(int ac, const char **&av)
   }
 
   if (ambient.w > 0.f && reduce_max(ambient) > 0.f) {
-    auto ospLight = ospray::cpp::Light("", "ambient"); // renderer.newLight("ambient");
+    auto ospLight = ospray::cpp::Light("scivis", "ambient"); // renderer.newLight("ambient");
     if (ospLight.handle() == nullptr) {
       throw std::runtime_error("Failed to create a 'AmbientLight'!");
     }

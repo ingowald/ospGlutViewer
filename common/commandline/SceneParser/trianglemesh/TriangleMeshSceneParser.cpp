@@ -140,7 +140,7 @@ TriangleMeshSceneParser::createDefaultMaterial(cpp::Renderer ren)
 
   if (ospMat.handle()) return ospMat;
 
-  ospMat = ospray::cpp::Material("","OBJMaterial"); //ren.newMaterial("OBJMaterial");
+  ospMat = ospray::cpp::Material("scivis","OBJMaterial"); //ren.newMaterial("OBJMaterial");
 
   ospMat.set("Kd", .8f, 0.f, 0.f);
   ospMat.commit();
