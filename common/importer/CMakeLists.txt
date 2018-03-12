@@ -29,7 +29,7 @@ ADD_LIBRARY(ogv_importer
   TinyXML2.cpp
 )
 TARGET_LINK_LIBRARIES(ogv_importer 
-  ospray_common
+  ${OSPRAY_COMMON_LIBRARY}
 #  ospray
 #  ospray_sg
 )

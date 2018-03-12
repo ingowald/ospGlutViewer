@@ -100,7 +100,7 @@ struct BiffParser : public SceneParser {
                              // std::shared_ptr<biff::Texture> btex
                              )
   {
-    cpp::Material mat = ospRenderer.newMaterial("SciVisMaterial");
+    cpp::Material mat = ospray::cpp::Material("","SciVisMaterial"); //ospRenderer.newMaterial("SciVisMaterial");
 
     mat.set("Kd", .6f, 0.6f, 0.6f);
     // if (btex && btex->rawDataSize) {

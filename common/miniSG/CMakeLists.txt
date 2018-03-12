@@ -47,7 +47,6 @@ ADD_LIBRARY(ogv_minisg
 
 TARGET_LINK_LIBRARIES(ogv_minisg
   ogv_xml
-#  ospray_common
   ${OSPRAY_LIBRARY}
   ${MAGICK_LIBRARIES}
 )
