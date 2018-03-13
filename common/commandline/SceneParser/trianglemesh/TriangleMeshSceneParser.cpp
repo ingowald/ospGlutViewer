@@ -163,7 +163,7 @@ cpp::Material TriangleMeshSceneParser::createMaterial(cpp::Renderer ren,
 
   cpp::Material ospMat;
   try {
-    ospMat = alreadyCreatedMaterials[mat] = ospray::cpp::Material("",type); //ren.newMaterial(type);
+    ospMat = alreadyCreatedMaterials[mat] = ospray::cpp::Material("scivis",type); //ren.newMaterial(type);
   } catch (const std::runtime_error &/*e*/) {
     warnMaterial(type);
     return createDefaultMaterial(ren);
