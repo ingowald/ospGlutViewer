@@ -32,11 +32,13 @@ SET(OSPRAY_DIR ${CMAKE_CURRENT_LIST_DIR}/../ospray)
 #SET(OSPRAY_DIR /usr/local)
 FIND_LIBRARY(OSPRAY_LIBRARY
   NAMES libospray.so PATHS 
+  ${OSPRAY_DIR}/clang
   ${OSPRAY_DIR}/gcc
   ${OSPRAY_DIR}/lib64 
   )
 FIND_LIBRARY(OSPRAY_COMMON_LIBRARY
   NAMES libospray_common.so
+  PATHS ${OSPRAY_DIR}/clang
   PATHS ${OSPRAY_DIR}/gcc
   PATHS ${OSPRAY_DIR}/lib64 
   )
