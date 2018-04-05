@@ -48,7 +48,7 @@ int main(int ac, const char **av)
   ospray::glut3D::initGLUT(&ac,av);
 
   auto device = ospGetCurrentDevice();
-  ospDeviceSetErrorMsgFunc(device, [](const char *msg) { std::cout << msg; });
+  ospDeviceSetErrorFunc(device, [](OSPError, const char *msg) { std::cout << msg; });
 
   auto ospObjs = parseWithDefaultParsers(ac, av);
 

@@ -100,14 +100,14 @@ namespace ospray {
     {
       InspectCenter(Glut3DWidget *widget);
       virtual void dragLeft(Glut3DWidget *widget, 
-                            const vec2i &to, const vec2i &from);
+                            const vec2i &to, const vec2i &from) override;
       virtual void dragRight(Glut3DWidget *widget, 
-                             const vec2i &to, const vec2i &from);
+                             const vec2i &to, const vec2i &from) override;
       virtual void dragMiddle(Glut3DWidget *widget, 
-                              const vec2i &to, const vec2i &from);
-      virtual void specialkey(Glut3DWidget *widget, const int32_t key);
+                              const vec2i &to, const vec2i &from) override;
+      virtual void specialkey(Glut3DWidget *widget, const int32_t key) override;
       virtual void keypress(Glut3DWidget *widget, int32_t key) override;
-      virtual void button(Glut3DWidget *widget, const vec2i &pos);
+      virtual void button(Glut3DWidget *widget, const vec2i &pos) override;
       /*! print class name */
       virtual std::string toString() const override { return "InspectCenter"; }
       void rotate(float du, float dv);
@@ -119,13 +119,13 @@ namespace ospray {
     {
       MoveMode(Glut3DWidget *widget) : Manipulator(widget) {}
       virtual void dragLeft(Glut3DWidget *widget, 
-                            const vec2i &to, const vec2i &from);
+                            const vec2i &to, const vec2i &from) override;
       virtual void dragRight(Glut3DWidget *widget, 
-                             const vec2i &to, const vec2i &from);
+                             const vec2i &to, const vec2i &from) override;
       virtual void dragMiddle(Glut3DWidget *widget, 
-                              const vec2i &to, const vec2i &from);
+                              const vec2i &to, const vec2i &from) override;
       virtual void keypress(Glut3DWidget *widget, int32_t key) override;
-      virtual void button(Glut3DWidget *widget, const vec2i &pos) {}
+      virtual void button(Glut3DWidget *widget, const vec2i &pos) override {}
       /*! print class name */
       virtual std::string toString() const override { return "MoveMode"; }
     };
