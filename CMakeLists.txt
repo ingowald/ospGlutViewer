@@ -42,17 +42,33 @@ FIND_LIBRARY(OSPRAY_COMMON_LIBRARY
   PATHS ${OSPRAY_DIR}/gcc
   PATHS ${OSPRAY_DIR}/lib64 
   )
-# for ospcommon
-INCLUDE_DIRECTORIES(${OSPRAY_DIR}/components)
+# for ospray API
 INCLUDE_DIRECTORIES(${OSPRAY_DIR}/ospray/include)
 
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
 
+# ------------------------------------------------------------------
+# take ospcommon from biff library
+#
+INCLUDE_DIRECTORIES(externals/biff/3rdParty/)
+ADD_SUBDIRECTORY(externals/biff/3rdParty/ospcommon)
 
+# ------------------------------------------------------------------
+# now build biff
+#
+SET(BIFF_OSPCOMMON_LIBRARY ospray_common)
 ADD_SUBDIRECTORY(externals/biff/biff)
+
+
+# ------------------------------------------------------------------
+# build "our" ptex
+#
 ADD_SUBDIRECTORY(externals/iw-ptex/)
 
+# ------------------------------------------------------------------
+# build "our" ptex
+#
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_LIST_DIR}
   ${CMAKE_CURRENT_LIST_DIR}/externals/biff/3rdParty #for ospcommon
