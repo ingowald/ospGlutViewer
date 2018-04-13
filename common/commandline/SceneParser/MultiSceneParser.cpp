@@ -34,7 +34,23 @@
 using namespace ospray;
 using namespace ospcommon;
 
+template<typename T>
+void microBench(const char *name, const T &lambda) 
+{
+  static size_t numCalls = 0;
+  static size_t nextPing = 16;
+  static double totalTime = 0.f;
 
+  double before = getSysTime();
+  lambda();
+  double after = getSysTime();
+  totalTime += (after-before);
+  numCalls++;
+  if (numCalls == nextPing) {
+    std::cout << "avg time for '" << name << "' is " << (totalTime / numCalls) << std::endl;
+    nextPing *= 2;
+  }
+}
 
 // std::map<const biff::Texture *, void *> filterForTexture;
 
@@ -100,18 +116,8 @@ struct BiffParser : public SceneParser {
                              // std::shared_ptr<biff::Texture> btex
                              )
   {
-    cpp::Material mat = ospray::cpp::Material("obj","default"); //ospRenderer.newMaterial("SciVisMaterial");
-
+    cpp::Material mat = ospray::cpp::Material("scivis","OBJMaterial");
     mat.set("Kd", .6f, 0.6f, 0.6f);
-    // if (btex && btex->rawDataSize) {
-    //   throw std::runtime_error("biff files with embedded ptex curretnly not supported");
-    //   // void *ptr = getPTexFilterFor(btex.get());
-    //   // ospSetVoidPtr(mat.handle(),"ptex_filter",(void *)ptr);
-    // }
-
-    // if (btex) 
-    //   ospSetString(mat.handle(),"map_color",p.second.param_string["fileName"].c_str());
-
 
     for (auto p : material->param_string) 
       ospSetString(mat.handle(),p.first.c_str(),p.second.c_str());
@@ -134,7 +140,45 @@ struct BiffParser : public SceneParser {
     mat.commit();
     return mat;
   }
-  
+
+  cpp::Geometry buildMesh(std::shared_ptr<biff::Scene> scene, 
+                          biff::GeomHandle geom) 
+  {
+    cpp::Geometry g("triangles");
+    std::shared_ptr<biff::TriMesh> mesh 
+      = scene->triMeshes[geom.geomID];
+    std::shared_ptr<biff::Material> bmat
+      = scene->getMaterial(mesh->materialID);
+    cpp::Material mat = makeMaterial(bmat// ,btex
+                                     ,scene
+                                     );
+    g.setMaterial(mat);
+      
+    // padding!
+    mesh->vtx.push_back(vec3f(0));
+    OSPData vtx = ospNewData(mesh->vtx.size()-1,OSP_FLOAT3,&mesh->vtx[0],OSP_DATA_SHARED_BUFFER);
+    g.set("position", vtx);
+    OSPData idx = ospNewData(mesh->idx.size(),OSP_INT3,&mesh->idx[0],OSP_DATA_SHARED_BUFFER);
+    g.set("index", idx);
+    if (mesh->txt.size()) {
+      OSPData txt = ospNewData(mesh->txt.size(),OSP_FLOAT2,&mesh->txt[0],OSP_DATA_SHARED_BUFFER);
+      g.set("texcoord", txt);
+    }
+    g.commit();
+    return g;
+  }
+
+  cpp::Geometry buildGeometry(std::shared_ptr<biff::Scene> scene, 
+                          biff::GeomHandle geom) 
+  {
+    switch (geom.type) {
+    case biff::TRI_MESH:
+      return buildMesh(scene,geom);
+    default: NOTIMPLEMENTED;
+    }
+  }
+
+
   bool parse(int ac, const char **&av)
   {
     for (int i=0;i<ac;i++) {
@@ -149,70 +193,46 @@ struct BiffParser : public SceneParser {
     
         rootBounds = ospcommon::box3f(vec3f(-100),vec3f(+100));
     
-        std::vector<cpp::Model> triMeshModel;
-        std::cout << "creating " << scene->triMeshes.size() << " triangle meshes..." << std::endl;
-        
-        for (auto mesh : scene->triMeshes) {
-          static int meshID = 0;
-          std::cout << "\r[" << (meshID++) << "/" << scene->triMeshes.size() << "]";
-          // std::shared_ptr<biff::Texture> btex
-          //   = scene->getTexture(mesh->texture.color);
-          
-          cpp::Geometry g("triangles");
-
-          std::shared_ptr<biff::Material> bmat
-            = scene->getMaterial(mesh->materialID);
-          cpp::Material mat = makeMaterial(bmat// ,btex
-                                           ,scene
-                                           );
-          g.setMaterial(mat);
-      
-          // padding!
-          mesh->vtx.push_back(vec3f(0));
-          OSPData vtx = ospNewData(mesh->vtx.size()-1,OSP_FLOAT3,&mesh->vtx[0],OSP_DATA_SHARED_BUFFER);
-          g.set("position", vtx);
-          OSPData idx = ospNewData(mesh->idx.size(),OSP_INT3,&mesh->idx[0],OSP_DATA_SHARED_BUFFER);
-          g.set("index", idx);
-          if (mesh->txt.size()) {
-            OSPData txt = ospNewData(mesh->txt.size(),OSP_FLOAT2,&mesh->txt[0],OSP_DATA_SHARED_BUFFER);
-            g.set("texcoord", txt);
+        // first - create one model (with shapes) per biff group
+        std::vector<cpp::Model> groupModels;
+        std::cout << "creating " << scene->groups.size() << " groups..." << std::endl;
+        for (auto &group : scene->groups) {
+          cpp::Model model;
+          std::cout << " - " << group->geometries.size() << " geometries              " << std::endl;
+          for (int shapeID=0;shapeID<(int)group->geometries.size();shapeID++) {
+            std::cout << "\r[" << shapeID << "/" << group->geometries.size() << "]    ";
+            try {
+              cpp::Geometry g = buildGeometry(scene,group->geometries[shapeID]);
+              model.addGeometry(g);
+            } catch (...) {
+              static bool warned = false;
+              if (!warned) {
+                std::cout << "WARNING - AT LEAST ONE UNSUPPORTED GEOMETRY" << std::endl;
+                warned = true;
+              }
+            }
           }
-          
-          // auto ospMaterialList = ospNewData(mats.size(), OSP_OBJECT, mats.data());
-          // ospCommit(ospMaterialList);
-          // g.set("materialList", ospMaterialList);
-          
-          // PRINT(mesh->materialID.size());
+          std::cout << "\r";
+          model.commit();
+          groupModels.push_back(model);
+        }
 
-          cpp::Model m;
-          m.addGeometry(g);
-          m.commit();
-      
-          triMeshModel.push_back(m);
+        // second: create the root model, by instantiating all the groups
+        std::cout << "creating max " << scene->instances.size() << " instances" << std::endl;
+        for (auto &inst : scene->instances) {
+          OSPGeometry ginst =
+            ospNewInstance(groupModels[inst.groupID].handle(),
+                           (osp::affine3f&)inst.xfm);
+          rootModel.addGeometry(ginst);
         }
         std::cout << std::endl;
-    
-        std::cout << "creating max " << scene->instances.size() << " instances (fewer if we have unsupported geometries)" << std::endl;
-        for (auto inst : scene->instances) {
-          switch(inst.geomType) {
-          case biff::Instance::TRI_MESH: {
-            OSPGeometry ginst =
-              ospNewInstance(triMeshModel[inst.geomID].handle(),(osp::affine3f&)inst.xfm);
-            rootModel.addGeometry(ginst);
-          } break;
-          default:
-            static int numOccurrances = 0;
-            if (!numOccurrances++)
-              std::cout << "warning: at least one unsupported geometry type ..." << std::endl;
-          }
-        }
         std::cout << "done building instances - committing toplevel scene..." << std::endl;
         rootModel.commit();
     
         return true;
       }
     }
-    return false;
+  return false;
   }
 };
 
