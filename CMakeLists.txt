@@ -20,6 +20,7 @@ cmake_minimum_required(VERSION 2.8)
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
+find_package(ospray REQUIRED)
 
 message("glut_libraries" ${GLUT_LIBRARIES})
 
@@ -28,22 +29,23 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 
-SET(OSPRAY_DIR ${CMAKE_CURRENT_LIST_DIR}/../ospray)
+#SET(OSPRAY_DIR ${CMAKE_CURRENT_LIST_DIR}/../ospray)
 #SET(OSPRAY_DIR /usr/local)
-FIND_LIBRARY(OSPRAY_LIBRARY
-  NAMES libospray.so PATHS 
-  ${OSPRAY_DIR}/clang
-  ${OSPRAY_DIR}/gcc
-  ${OSPRAY_DIR}/lib64 
-  )
-FIND_LIBRARY(OSPRAY_COMMON_LIBRARY
-  NAMES libospray_common.so
-  PATHS ${OSPRAY_DIR}/clang
-  PATHS ${OSPRAY_DIR}/gcc
-  PATHS ${OSPRAY_DIR}/lib64 
-  )
+#FIND_LIBRARY(OSPRAY_LIBRARY
+#  NAMES libospray.so PATHS 
+#  ${OSPRAY_DIR}/clang
+#  ${OSPRAY_DIR}/gcc
+#  ${OSPRAY_DIR}/lib64 
+#  )
+#FIND_LIBRARY(OSPRAY_COMMON_LIBRARY
+#  NAMES libospray_common.so
+#  PATHS ${OSPRAY_DIR}/clang
+#  PATHS ${OSPRAY_DIR}/gcc
+#  PATHS ${OSPRAY_DIR}/lib64 
+#  )
 # for ospray API
-INCLUDE_DIRECTORIES(${OSPRAY_DIR}/ospray/include)
+#INCLUDE_DIRECTORIES(${OSPRAY_DIR}/ospray/include)
+INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
 
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
