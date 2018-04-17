@@ -28,7 +28,7 @@
 
 #include "biff/biff.h"
 // ptex:
-#include "ptex/Ptexture.h"
+// #include "ptex/Ptexture.h"
 // #include "ospcommon/tasking/parallel_for.h"
 
 using namespace ospray;
