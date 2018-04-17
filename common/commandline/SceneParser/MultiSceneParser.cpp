@@ -108,13 +108,8 @@ struct BiffParser : public SceneParser {
     return alreadyCreated[btex];
   }
 
-  // std::mutex parallelSetupMutex;
-
   cpp::Material makeMaterial(std::shared_ptr<biff::Material> material,
-                             std::shared_ptr<biff::Scene> scene
-                             // ,
-                             // std::shared_ptr<biff::Texture> btex
-                             )
+                             std::shared_ptr<biff::Scene> scene)
   {
     cpp::Material mat = ospray::cpp::Material("scivis","OBJMaterial");
     mat.set("Kd", .6f, 0.6f, 0.6f);
@@ -132,7 +127,9 @@ struct BiffParser : public SceneParser {
       if (!btex->rawDataSize)
         throw std::runtime_error("can currently do ONLY embedded ptex");
       // ospSetString(mat.handle(),p.first.c_str(),btex->param_string["filename"].c_str());
-      ospSetData(mat.handle(),p.first.c_str(),createOspDataFromTexture(btex));
+      ospSetData(mat.handle(),
+                 ("ptex://"+p.first).c_str(),
+                 createOspDataFromTexture(btex));
       // PRINT(p.first);
       // PRINT(btex->param_string["filename"]);
     }
@@ -141,7 +138,7 @@ struct BiffParser : public SceneParser {
     return mat;
   }
 
-  cpp::Geometry buildMesh(std::shared_ptr<biff::Scene> scene, 
+  cpp::Geometry buildTriMesh(std::shared_ptr<biff::Scene> scene, 
                           biff::GeomHandle geom) 
   {
     cpp::Geometry g("triangles");
@@ -168,12 +165,52 @@ struct BiffParser : public SceneParser {
     return g;
   }
 
+  cpp::Geometry buildQuadMesh(std::shared_ptr<biff::Scene> scene, 
+                              biff::GeomHandle geom) 
+  {
+    // for now, let's split everything into tris - fix as soon as we
+    // have 'real' quads in ospray
+    cpp::Geometry g("triangles");
+    std::shared_ptr<biff::QuadMesh> mesh 
+      = scene->quadMeshes[geom.geomID];
+    std::shared_ptr<biff::Material> bmat
+      = scene->getMaterial(mesh->materialID);
+    cpp::Material mat = makeMaterial(bmat// ,btex
+                                     ,scene
+                                     );
+    g.setMaterial(mat);
+      
+    // padding!
+    mesh->vtx.push_back(vec3f(0));
+    OSPData vtx = ospNewData(mesh->vtx.size()-1,OSP_FLOAT3,&mesh->vtx[0],OSP_DATA_SHARED_BUFFER);
+    g.set("position", vtx);
+#if 1
+    std::vector<vec3i> asTris;
+    for (vec4i quad : mesh->idx) {
+      asTris.push_back(vec3i(quad.x,quad.y,quad.z));
+      asTris.push_back(vec3i(quad.x,quad.z,quad.w));
+    }
+    OSPData idx = ospNewData(asTris.size(),OSP_INT3,&asTris[0],0);
+#else
+    OSPData idx = ospNewData(mesh->idx.size(),OSP_INT3,&mesh->idx[0],OSP_DATA_SHARED_BUFFER);
+#endif
+    g.set("index", idx);
+    if (mesh->txt.size()) {
+      OSPData txt = ospNewData(mesh->txt.size(),OSP_FLOAT2,&mesh->txt[0],OSP_DATA_SHARED_BUFFER);
+      g.set("texcoord", txt);
+    }
+    g.commit();
+    return g;
+  }
+
   cpp::Geometry buildGeometry(std::shared_ptr<biff::Scene> scene, 
                           biff::GeomHandle geom) 
   {
     switch (geom.type) {
     case biff::TRI_MESH:
-      return buildMesh(scene,geom);
+      return buildTriMesh(scene,geom);
+    case biff::QUAD_MESH:
+      return buildQuadMesh(scene,geom);
     default: NOTIMPLEMENTED;
     }
   }
