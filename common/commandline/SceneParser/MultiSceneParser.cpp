@@ -165,17 +165,10 @@ struct BiffParser : public SceneParser {
     return g;
   }
 
-#define REAL_QUADS
   cpp::Geometry buildQuadMesh(std::shared_ptr<biff::Scene> scene, 
                               biff::GeomHandle geom) 
   {
-#if defined(REAL_QUADS)
     cpp::Geometry g("quads");
-#else
-    // for now, let's split everything into tris - fix as soon as we
-    // have 'real' quads in ospray
-    cpp::Geometry g("triangles");
-#endif
 
     std::shared_ptr<biff::QuadMesh> mesh 
       = scene->quadMeshes[geom.geomID];
@@ -190,16 +183,7 @@ struct BiffParser : public SceneParser {
     mesh->vtx.push_back(vec3f(0));
     OSPData vtx = ospNewData(mesh->vtx.size()-1,OSP_FLOAT3,&mesh->vtx[0],OSP_DATA_SHARED_BUFFER);
     g.set("position", vtx);
-#if defined(REAL_QUADS)
     OSPData idx = ospNewData(mesh->idx.size(),OSP_INT4,&mesh->idx[0],OSP_DATA_SHARED_BUFFER);
-#else
-    std::vector<vec3i> asTris;
-    for (vec4i quad : mesh->idx) {
-      asTris.push_back(vec3i(quad.x,quad.y,quad.z));
-      asTris.push_back(vec3i(quad.x,quad.z,quad.w));
-    }
-    OSPData idx = ospNewData(asTris.size(),OSP_INT3,&asTris[0],0);
-#endif
     g.set("index", idx);
     if (mesh->txt.size()) {
       OSPData txt = ospNewData(mesh->txt.size(),OSP_FLOAT2,&mesh->txt[0],OSP_DATA_SHARED_BUFFER);
